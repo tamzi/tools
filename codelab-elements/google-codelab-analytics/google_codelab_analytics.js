@@ -57,8 +57,7 @@ const ANALYTICS_READY_ATTR = 'anayltics-ready';
  * A list of selectors whose elements are waiting for this to be set up.
  * @const {!Array<string>}
  */
-const DEPENDENT_SELECTORS = ['google-codelab'];
-
+const DEPENDENT_SELECTORS = [ 'google-codelab' ];
 
 /**
  * Event detail passed when firing ACTION_EVENT.
@@ -81,7 +80,6 @@ let AnalyticsTrackingEvent;
  * }}
  */
 let AnalyticsPageview;
-
 
 /**
  * @extends {HTMLElement}
@@ -145,21 +143,18 @@ class CodelabAnalytics extends HTMLElement {
 
   /** @private */
   addEventListeners_() {
-    this.eventHandler_.listen(document.body, ACTION_EVENT,
-      (e) => {
-        const detail = /** @type {AnalyticsTrackingEvent} */ (
-          e.getBrowserEvent().detail);
-        // Add tracking...
-        this.trackEvent_(
-          detail['category'], detail['action'], detail['label']);
-      });
+    this.eventHandler_.listen(document.body, ACTION_EVENT, (e) => {
+      const detail =
+          /** @type {AnalyticsTrackingEvent} */ (e.getBrowserEvent().detail);
+      // Add tracking...
+      this.trackEvent_(detail['category'], detail['action'], detail['label']);
+    });
 
-    this.eventHandler_.listen(document.body, PAGEVIEW_EVENT,
-      (e) => {
-        const detail = /** @type {AnalyticsPageview} */ (
-          e.getBrowserEvent().detail);
-        this.trackPageview_(detail['page'], detail['title']);
-      });
+    this.eventHandler_.listen(document.body, PAGEVIEW_EVENT, (e) => {
+      const detail =
+          /** @type {AnalyticsPageview} */ (e.getBrowserEvent().detail);
+      this.trackPageview_(detail['page'], detail['title']);
+    });
   }
 
   /**
@@ -167,7 +162,7 @@ class CodelabAnalytics extends HTMLElement {
    * @export
    */
   static get observedAttributes() {
-    return [CODELAB_GAID_ATTR, CODELAB_ENV_ATTR, CODELAB_CATEGORY_ATTR];
+    return [ CODELAB_GAID_ATTR, CODELAB_ENV_ATTR, CODELAB_CATEGORY_ATTR ];
   }
 
   /**
@@ -180,20 +175,20 @@ class CodelabAnalytics extends HTMLElement {
    */
   attributeChangedCallback(attr, oldValue, newValue, namespace) {
     switch (attr) {
-      case GAID_ATTR:
-        this.gaid_ = newValue;
-        break;
-      case CODELAB_GAID_ATTR:
-        if (newValue && this.hasSetup_) {
-          this.createCodelabGATracker_();
-        }
-        break;
-      case CODELAB_ENV_ATTR:
-        this.codelabEnv_ = newValue;
-        break;
-      case CODELAB_CATEGORY_ATTR:
-        this.codelabCategory_ = newValue;
-        break;
+    case GAID_ATTR:
+      this.gaid_ = newValue;
+      break;
+    case CODELAB_GAID_ATTR:
+      if (newValue && this.hasSetup_) {
+        this.createCodelabGATracker_();
+      }
+      break;
+    case CODELAB_ENV_ATTR:
+      this.codelabEnv_ = newValue;
+      break;
+    case CODELAB_CATEGORY_ATTR:
+      this.codelabCategory_ = newValue;
+      break;
     }
   }
 
@@ -207,12 +202,12 @@ class CodelabAnalytics extends HTMLElement {
   trackEvent_(category, opt_action, opt_label) {
     const params = {
       // Always event for trackEvent_ method
-      'hitType': 'event',
-      'dimension1': this.codelabEnv_,
-      'dimension2': this.codelabCategory_ || '',
-      'eventCategory': category,
-      'eventAction': opt_action || '',
-      'eventLabel': opt_label || '',
+      'hitType' : 'event',
+      'dimension1' : this.codelabEnv_,
+      'dimension2' : this.codelabCategory_ || '',
+      'eventCategory' : category,
+      'eventAction' : opt_action || '',
+      'eventLabel' : opt_label || '',
     };
     this.gaSend_(params);
   }
@@ -224,11 +219,11 @@ class CodelabAnalytics extends HTMLElement {
    */
   trackPageview_(opt_page, opt_title) {
     const params = {
-      'hitType': 'pageview',
-      'dimension1': this.codelabEnv_,
-      'dimension2': this.codelabCategory_,
-      'page': opt_page || '',
-      'title': opt_title || ''
+      'hitType' : 'pageview',
+      'dimension1' : this.codelabEnv_,
+      'dimension2' : this.codelabCategory_,
+      'page' : opt_page || '',
+      'title' : opt_title || ''
     };
     this.gaSend_(params);
   }
@@ -249,9 +244,7 @@ class CodelabAnalytics extends HTMLElement {
     window['ga'](function() {
       if (window['ga'].getAll) {
         const trackers = window['ga'].getAll();
-        trackers.forEach((tracker) => {
-          tracker.send(params);
-        });
+        trackers.forEach((tracker) => { tracker.send(params); });
       }
     });
   }
@@ -260,9 +253,7 @@ class CodelabAnalytics extends HTMLElement {
    * @export
    * @override
    */
-  disconnectedCallback() {
-    this.eventHandler_.removeAll();
-  }
+  disconnectedCallback() { this.eventHandler_.removeAll(); }
 
   /**
    * @return {string}
@@ -285,8 +276,8 @@ class CodelabAnalytics extends HTMLElement {
    */
   static injectGAScript() {
     /** @type {!HTMLScriptElement} */
-    const resource = /** @type {!HTMLScriptElement} */ (
-        document.createElement('script'));
+    const resource =
+        /** @type {!HTMLScriptElement} */ (document.createElement('script'));
     resource.src = 'https://www.google-analytics.com/analytics.js';
     resource.async = false;
     return new Promise((resolve, reject) => {
@@ -319,7 +310,7 @@ class CodelabAnalytics extends HTMLElement {
 
     try {
       return await CodelabAnalytics.injectGAScript();
-    } catch(e) {
+    } catch (e) {
       return;
     }
   }

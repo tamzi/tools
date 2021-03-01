@@ -24,7 +24,8 @@ const HTML5LocalStorage =
     goog.require('goog.storage.mechanism.HTML5LocalStorage');
 const IgnoreArgument = goog.require('goog.testing.mockmatchers.IgnoreArgument');
 const MockControl = goog.require('goog.testing.MockControl');
-const events = goog.require('goog.events');const testSuite = goog.require('goog.testing.testSuite');
+const events = goog.require('goog.events');
+const testSuite = goog.require('goog.testing.testSuite');
 goog.require('goog.testing.asserts');
 goog.require('goog.testing.jsunit');
 
@@ -41,14 +42,15 @@ const localStorage = new HTML5LocalStorage();
 const mockControl = new MockControl();
 
 const polymerHtml = '<google-codelab-survey survey-id="test">' +
-  '<h4>Question?</h4><paper-radio-group>' +
-  '<paper-radio-button>Title Text</paper-radio-button>' +
-  '<paper-radio-button>Second Option</paper-radio-button>' +
-  '</paper-radio-group></google-codelab-survey>';
+                    '<h4>Question?</h4><paper-radio-group>' +
+                    '<paper-radio-button>Title Text</paper-radio-button>' +
+                    '<paper-radio-button>Second Option</paper-radio-button>' +
+                    '</paper-radio-group></google-codelab-survey>';
 
-const polymerHtmlInvalid = '<google-codelab-survey survey-id="test"><paper-radio-group>' +
-  '<paper-radio-button>Title Text</paper-radio-button>' +
-  '</paper-radio-group></google-codelab-survey>';
+const polymerHtmlInvalid =
+    '<google-codelab-survey survey-id="test"><paper-radio-group>' +
+    '<paper-radio-button>Title Text</paper-radio-button>' +
+    '</paper-radio-group></google-codelab-survey>';
 
 testSuite({
 
@@ -72,7 +74,8 @@ testSuite({
     document.body.appendChild(div);
     const surveyCE = div.querySelector('google-codelab-survey');
     const radioInputEl = surveyCE.querySelector('input#question--title-text');
-    const radioLabelEl = surveyCE.querySelector('label#question--title-text-label');
+    const radioLabelEl =
+        surveyCE.querySelector('label#question--title-text-label');
     const radioTextEl = surveyCE.querySelector('.option-text');
     const surveyWrapperEl = surveyCE.querySelector('.survey-questions');
     assertNotNull(radioInputEl);
@@ -102,14 +105,14 @@ testSuite({
     document.body.addEventListener('google-codelab-action', mockEventListener);
     mockControl.$replayAll();
 
-    const firstRadioTextElement = div.querySelector(
-        `.${OPTION_WRAPPER_CLASS} .${RADIO_TEXT_CLASS}`);
+    const firstRadioTextElement =
+        div.querySelector(`.${OPTION_WRAPPER_CLASS} .${RADIO_TEXT_CLASS}`);
     firstRadioTextElement.click();
 
     mockControl.$verifyAll();
     mockControl.$tearDown();
-    document.body.removeEventListener(
-        'google-codelab-action', mockEventListener);
+    document.body.removeEventListener('google-codelab-action',
+                                      mockEventListener);
   },
 
   async testCodelabSurveyOptionNonMouseInteraction_dispatchesEvent() {
@@ -122,14 +125,13 @@ testSuite({
     mockControl.$replayAll();
 
     const radioInputElement = div.querySelector('input');
-    radioInputElement.dispatchEvent(new Event(events.EventType.CHANGE, {
-          bubbles: true
-        }));
+    radioInputElement.dispatchEvent(
+        new Event(events.EventType.CHANGE, {bubbles : true}));
 
     mockControl.$verifyAll();
     mockControl.$tearDown();
-    document.body.removeEventListener(
-        'google-codelab-action', mockEventListener);
+    document.body.removeEventListener('google-codelab-action',
+                                      mockEventListener);
   },
 
   testCodelabSurveyOptionClick() {
@@ -140,9 +142,11 @@ testSuite({
     assertFalse(optionEls[1].querySelector('input').checked);
 
     optionEls[0].click();
-    assertEquals('{"Question?":"Title Text"}', localStorage.get('codelab-survey-test'));
+    assertEquals('{"Question?":"Title Text"}',
+                 localStorage.get('codelab-survey-test'));
     optionEls[1].click();
-    assertEquals('{"Question?":"Second Option"}', localStorage.get('codelab-survey-test'));
+    assertEquals('{"Question?":"Second Option"}',
+                 localStorage.get('codelab-survey-test'));
   },
 
   testCodelabSurveyLoadsStoredAnswers() {
