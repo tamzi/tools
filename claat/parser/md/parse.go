@@ -54,6 +54,8 @@ const (
 	MetaFeedbackLink     = "feedback link"
 	MetaAnalyticsAccount = "analytics account"
 	MetaTags             = "tags"
+	MetaSource           = "source"
+	MetaDuration         = "duration"
 )
 
 const (
@@ -453,43 +455,43 @@ func addMetadataToCodelab(m map[string]string, c *types.Codelab, opts parser.Opt
 		case MetaSummary:
 			// Directly assign the summary to the codelab field.
 			c.Summary = v
-			break
 		case MetaID:
 			// Directly assign the ID to the codelab field.
 			c.ID = v
-			break
 		case MetaCategories:
 			// Standardize the categories and append to codelab field.
 			c.Categories = append(c.Categories, standardSplit(v)...)
-			break
 		case MetaEnvironments:
 			// Standardize the tags and append to the codelab field.
 			c.Tags = append(c.Tags, standardSplit(v)...)
-			break
 		case MetaStatus:
 			// Standardize the statuses and append to the codelab field.
 			statuses := standardSplit(v)
 			statusesAsLegacy := types.LegacyStatus(statuses)
 			c.Status = &statusesAsLegacy
-			break
 		case MetaFeedbackLink:
 			// Directly assign the feedback link to the codelab field.
 			c.Feedback = v
-			break
 		case MetaAnalyticsAccount:
 			// Directly assign the GA id to the codelab field.
 			c.GA = v
-			break
 		case MetaTags:
 			// Standardize the tags and append to the codelab field.
 			c.Tags = append(c.Tags, standardSplit(v)...)
-			break
+		case MetaSource:
+			// Directly assign the source doc ID to the source field.
+			c.Source = v
+		case MetaDuration:
+			// Convert the duration to an integer and assign to the duration field.
+			duration, err := strconv.Atoi(v)
+			if err == nil {
+				c.Duration = duration
+			}
 		default:
 			// If not explicitly parsed, it might be a pass_metadata value.
 			if _, ok := opts.PassMetadata[k]; ok {
 				c.Extra[k] = v
 			}
-			break
 		}
 	}
 	return nil
@@ -657,12 +659,18 @@ func tableRow(ds *docState) []*types.GridCell {
 		nn = parser.BlockNodes(nn)
 		nn = parser.CompactNodes(nn)
 		ds.pop()
-		if len(nn) == 0 {
-			continue
-		}
 		cs, err := strconv.Atoi(nodeAttr(td, "colspan"))
 		if err != nil {
 			cs = 1
+			for ns := td.NextSibling; ns != nil; ns = ns.NextSibling {
+				if ns.DataAtom != atom.Td && ns.DataAtom != atom.Th {
+					continue
+				}
+				if ns.FirstChild != nil {
+					break
+				}
+				cs++
+			}
 		}
 		rs, err := strconv.Atoi(nodeAttr(td, "rowspan"))
 		if err != nil {
@@ -793,7 +801,7 @@ func list(ds *docState) types.Node {
 func image(ds *docState) types.Node {
 	alt := nodeAttr(ds.cur, "alt")
 	// Author-added double quotes in attributes break html syntax
-	alt = strings.Replace(alt, `"`, "&quot;", -1)
+	alt = html.EscapeString(alt)
 	if strings.Contains(alt, "youtube.com/watch") {
 		return youtube(ds)
 	} else if strings.Contains(alt, "https://") {
@@ -826,7 +834,7 @@ func image(ds *docState) types.Node {
 
 	if title := nodeAttr(ds.cur, "title"); title != "" {
 		// Author-added double quotes in attributes break html syntax
-		n.Title = strings.Replace(title, `"`, "&quot;", -1)
+		n.Title = html.EscapeString(title)
 	}
 
 	if ws := nodeAttr(ds.cur, "width"); ws != "" {
