@@ -305,7 +305,7 @@ func NewCodeNode(v string, term bool, lang string) *CodeNode {
 		node:  node{typ: NodeCode},
 		Value: v,
 		Term:  term,
-		Lang: lang,
+		Lang:  lang,
 	}
 }
 
